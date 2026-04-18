@@ -26,7 +26,11 @@ else
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 endif
 
-build: ## Build the API binary (auto-detects .exe on Windows)
+swagger: ## Regenerate Swagger docs (installs swag if missing)
+	@which swag > /dev/null 2>&1 || go install github.com/swaggo/swag/cmd/swag@latest
+	swag init --generalInfo cmd/api/main.go --output docs
+
+build: swagger ## Build the API binary — generates Swagger docs first
 	@echo Building for $(DETECTED_OS)...
 	go build -o $(BIN_DIR)$(SEP)$(BINARY) ./cmd/api
 	@echo Build complete: $(BIN_DIR)$(SEP)$(BINARY)
@@ -37,11 +41,8 @@ run: ## Run the API server
 test: ## Run all tests
 	go test ./...
 
-e2e: ## Run Deno E2E tests against a running server (set API_URL and DEVICE_SECRET env vars as needed)
+e2e: ## Run Deno E2E tests against a running server
 	cd e2e && deno task test
-
-swagger: ## Regenerate Swagger docs
-	swag init --generalInfo cmd/api/main.go --output docs
 
 clean: ## Remove build artifacts
 	$(RMDIR) $(BIN_DIR)

@@ -1,0 +1,537 @@
+{
+  "info": {
+    "name": "Gasolina API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Fuel entry sync API. Set the 'Gasolina Local' environment before running."
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const refreshed = pm.response.headers.get('X-Refresh-Token');",
+          "if (refreshed) { pm.environment.set('token', refreshed); }"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /auth/token — valid secret",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response contains token', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.token).to.be.a('string').and.not.empty;",
+                  "    pm.environment.set('token', body.token);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/token",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"device_secret\": \"{{device_secret}}\" }"
+            }
+          }
+        },
+        {
+          "name": "POST /auth/token — wrong secret → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/token",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"device_secret\": \"wrong-secret\" }"
+            }
+          }
+        },
+        {
+          "name": "POST /auth/token — empty body → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/token",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "" }
+          }
+        },
+        {
+          "name": "GET /v1/entries — no token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/entries"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Entries",
+      "item": [
+        {
+          "name": "POST /v1/entries — create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Entry returned', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.id).to.eql('entry-001');",
+                  "    pm.expect(body.created_at).to.be.a('string').and.not.empty;",
+                  "    pm.environment.set('entry_id', body.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/entries",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"entry-001\",\n  \"liters\": 45.0,\n  \"total_cost\": 72.50,\n  \"price_per_l\": 1.611,\n  \"odometer\": 98765.4,\n  \"fuelled_at\": \"2024-06-01T08:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /v1/entries — missing id → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/entries",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"liters\": 45.0,\n  \"total_cost\": 72.50,\n  \"fuelled_at\": \"2024-06-01T08:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /v1/entries — zero liters → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/entries",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"entry-bad\",\n  \"liters\": 0,\n  \"total_cost\": 72.50,\n  \"price_per_l\": 1.611,\n  \"odometer\": 98765,\n  \"fuelled_at\": \"2024-06-01T08:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /v1/entries — list all",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/entries",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "GET /v1/entries?since=... — delta pull",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('since_ms', Date.now() - 3600000);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/entries?since={{since_ms}}",
+              "query": [{ "key": "since", "value": "{{since_ms}}" }]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "GET /v1/entries?since=abc — invalid → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/entries?since=abc",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "GET /v1/entries/:id — get by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct entry', () => {",
+                  "    pm.expect(pm.response.json().id).to.eql(pm.environment.get('entry_id'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/entries/{{entry_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "GET /v1/entries/:id — not found → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/entries/does-not-exist",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "PUT /v1/entries/:id — update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Liters updated', () => {",
+                  "    pm.expect(pm.response.json().liters).to.eql(50.0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/v1/entries/{{entry_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"liters\": 50.0,\n  \"total_cost\": 82.00,\n  \"price_per_l\": 1.640,\n  \"odometer\": 99000.0,\n  \"fuelled_at\": \"2024-06-01T08:00:00Z\",\n  \"updated_at\": \"2099-01-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT /v1/entries/:id — older updated_at ignored",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Liters unchanged (last-write-wins)', () => {",
+                  "    pm.expect(pm.response.json().liters).to.eql(50.0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/v1/entries/{{entry_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"liters\": 1.0,\n  \"total_cost\": 1.00,\n  \"price_per_l\": 1.0,\n  \"odometer\": 1.0,\n  \"fuelled_at\": \"2024-06-01T08:00:00Z\",\n  \"updated_at\": \"2000-01-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /v1/entries/:id — soft delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v1/entries/{{entry_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "GET /v1/entries/:id — deleted_at is set after delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('deleted_at is set', () => {",
+                  "    pm.expect(pm.response.json().deleted_at).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/entries/{{entry_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sync",
+      "item": [
+        {
+          "name": "POST /v1/entries/sync — full recovery",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/entries/sync",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"last_sync_at\": 0,\n  \"entries\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /v1/entries/sync — push new entry",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Synced entry present', () => {",
+                  "    const ids = pm.response.json().map(e => e.id);",
+                  "    pm.expect(ids).to.include('entry-sync-001');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/entries/sync",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"last_sync_at\": 0,\n  \"entries\": [\n    {\n      \"id\": \"entry-sync-001\",\n      \"liters\": 38.0,\n      \"total_cost\": 61.00,\n      \"price_per_l\": 1.605,\n      \"odometer\": 110000,\n      \"fuelled_at\": \"2024-07-01T07:30:00Z\",\n      \"updated_at\": \"2024-07-01T07:30:00Z\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /v1/entries/sync — push deletion",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Entry has deleted_at', () => {",
+                  "    const entry = pm.response.json().find(e => e.id === 'entry-sync-001');",
+                  "    pm.expect(entry).to.not.be.undefined;",
+                  "    pm.expect(entry.deleted_at).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/entries/sync",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"last_sync_at\": 0,\n  \"entries\": [\n    {\n      \"id\": \"entry-sync-001\",\n      \"liters\": 38.0,\n      \"total_cost\": 61.00,\n      \"price_per_l\": 1.605,\n      \"odometer\": 110000,\n      \"fuelled_at\": \"2024-07-01T07:30:00Z\",\n      \"updated_at\": \"2024-07-02T09:00:00Z\",\n      \"deleted_at\": \"2024-07-02T09:00:00Z\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /v1/entries/sync — empty body → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/entries/sync",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "" }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url",      "value": "http://localhost:8080" },
+    { "key": "device_secret", "value": "" },
+    { "key": "token",         "value": "" },
+    { "key": "entry_id",      "value": "" }
+  ]
+}

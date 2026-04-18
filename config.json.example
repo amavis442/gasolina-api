@@ -1,0 +1,7 @@
+{
+  "database_url":  "postgres://user:pass@localhost:5432/gasolina?sslmode=disable",
+  "jwt_secret":    "change-me",
+  "device_secret": "change-me",
+  "port":          "8080",
+  "token_ttl":     "24h"
+}

@@ -11,7 +11,7 @@ type createEntryRequest struct {
 	Liters    float64   `json:"liters"      example:"40.5"`
 	TotalCost float64   `json:"total_cost"  example:"65.80"`
 	PricePerL float64   `json:"price_per_l" example:"1.625"`
-	Odometer  float64   `json:"odometer"    example:"123456.7"`
+	Kilometers float64  `json:"kilometers"  example:"123456.7"`
 	FuelledAt time.Time `json:"fuelled_at"  example:"2024-06-01T08:00:00Z"`
 }
 
@@ -20,7 +20,7 @@ type updateEntryRequest struct {
 	Liters    float64   `json:"liters"      example:"40.5"`
 	TotalCost float64   `json:"total_cost"  example:"65.80"`
 	PricePerL float64   `json:"price_per_l" example:"1.625"`
-	Odometer  float64   `json:"odometer"    example:"123456.7"`
+	Kilometers float64  `json:"kilometers"  example:"123456.7"`
 	FuelledAt time.Time `json:"fuelled_at"  example:"2024-06-01T08:00:00Z"`
 	UpdatedAt time.Time `json:"updated_at"  example:"2024-06-01T09:00:00Z"`
 }
@@ -31,7 +31,7 @@ type syncEntryItem struct {
 	Liters    float64    `json:"liters"      example:"40.5"`
 	TotalCost float64    `json:"total_cost"  example:"65.80"`
 	PricePerL float64    `json:"price_per_l" example:"1.625"`
-	Odometer  float64    `json:"odometer"    example:"123456.7"`
+	Kilometers float64   `json:"kilometers"  example:"123456.7"`
 	FuelledAt time.Time  `json:"fuelled_at"  example:"2024-06-01T08:00:00Z"`
 	UpdatedAt time.Time  `json:"updated_at"  example:"2024-06-01T09:00:00Z"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
@@ -49,7 +49,7 @@ type fuelEntryResponse struct {
 	Liters    float64    `json:"liters"      example:"40.5"`
 	TotalCost float64    `json:"total_cost"  example:"65.80"`
 	PricePerL float64    `json:"price_per_l" example:"1.625"`
-	Odometer  float64    `json:"odometer"    example:"123456.7"`
+	Kilometers float64   `json:"kilometers"  example:"123456.7"`
 	FuelledAt time.Time  `json:"fuelled_at"  example:"2024-06-01T08:00:00Z"`
 	CreatedAt time.Time  `json:"created_at"  example:"2024-06-01T07:00:00Z"`
 	UpdatedAt time.Time  `json:"updated_at"  example:"2024-06-01T09:00:00Z"`

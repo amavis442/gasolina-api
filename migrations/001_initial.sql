@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS fuel_entries (
     liters      DOUBLE PRECISION NOT NULL,
     total_cost  DOUBLE PRECISION NOT NULL,
     price_per_l DOUBLE PRECISION NOT NULL,
-    odometer    DOUBLE PRECISION NOT NULL,
+    kilometers  DOUBLE PRECISION NOT NULL,
     fuelled_at  TIMESTAMPTZ NOT NULL,
     created_at  TIMESTAMPTZ NOT NULL,
     updated_at  TIMESTAMPTZ NOT NULL,

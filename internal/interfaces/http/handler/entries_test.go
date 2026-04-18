@@ -19,7 +19,7 @@ func validCreateBody() map[string]any {
 		"liters":     40.5,
 		"total_cost": 65.80,
 		"price_per_l": 1.625,
-		"odometer":   123456.7,
+		"kilometers":   123456.7,
 		"fuelled_at": time.Now().Format(time.RFC3339),
 	}
 }
@@ -158,7 +158,7 @@ func TestUpdate_ExistingEntry_Returns200(t *testing.T) {
 		"liters":     99.9,
 		"total_cost": 150.0,
 		"price_per_l": 1.5,
-		"odometer":   6000,
+		"kilometers":   6000,
 		"fuelled_at": time.Now().Format(time.RFC3339),
 		"updated_at": time.Now().Format(time.RFC3339),
 	}
@@ -221,7 +221,7 @@ func TestSync_ValidPayload_Returns200(t *testing.T) {
 				Liters:    40.0,
 				TotalCost: 60.0,
 				PricePerL: 1.5,
-				Odometer:  1000,
+				Kilometers: 1000,
 				FuelledAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},

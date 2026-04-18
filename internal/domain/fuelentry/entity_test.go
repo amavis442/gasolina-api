@@ -16,7 +16,7 @@ func validEntry() *fuelentry.FuelEntry {
 		Liters:    40.5,
 		TotalCost: 65.80,
 		PricePerL: 1.625,
-		Odometer:  123456.7,
+		Kilometers: 123456.7,
 		FuelledAt: time.Now(),
 	}
 }
@@ -57,17 +57,17 @@ func TestValidate_NegativeTotalCost(t *testing.T) {
 	assertValidateError(t, e, "total_cost must be positive")
 }
 
-func TestValidate_NegativeOdometer(t *testing.T) {
+func TestValidate_NegativeKilometers(t *testing.T) {
 	e := validEntry()
-	e.Odometer = -1
-	assertValidateError(t, e, "odometer must be non-negative")
+	e.Kilometers = -1
+	assertValidateError(t, e, "kilometers must be non-negative")
 }
 
-func TestValidate_ZeroOdometerIsAllowed(t *testing.T) {
+func TestValidate_ZeroKilometersIsAllowed(t *testing.T) {
 	e := validEntry()
-	e.Odometer = 0
+	e.Kilometers = 0
 	if err := e.Validate(); err != nil {
-		t.Errorf("expected zero odometer to be valid, got: %v", err)
+		t.Errorf("expected zero kilometers to be valid, got: %v", err)
 	}
 }
 

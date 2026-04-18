@@ -10,7 +10,7 @@ type CreateInput struct {
 	Liters    float64   `json:"liters"`
 	TotalCost float64   `json:"total_cost"`
 	PricePerL float64   `json:"price_per_l"`
-	Odometer  float64   `json:"odometer"`
+	Kilometers float64  `json:"kilometers"`
 	FuelledAt time.Time `json:"fuelled_at"`
 }
 
@@ -19,7 +19,7 @@ type UpdateInput struct {
 	Liters    float64   `json:"liters"`
 	TotalCost float64   `json:"total_cost"`
 	PricePerL float64   `json:"price_per_l"`
-	Odometer  float64   `json:"odometer"`
+	Kilometers float64  `json:"kilometers"`
 	FuelledAt time.Time `json:"fuelled_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -34,7 +34,7 @@ type SyncEntry struct {
 	Liters    float64    `json:"liters"`
 	TotalCost float64    `json:"total_cost"`
 	PricePerL float64    `json:"price_per_l"`
-	Odometer  float64    `json:"odometer"`
+	Kilometers float64   `json:"kilometers"`
 	FuelledAt time.Time  `json:"fuelled_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`

@@ -25,7 +25,7 @@ func (s *Service) Add(ctx context.Context, in CreateInput) (*fuelentry.FuelEntry
 		Liters:    in.Liters,
 		TotalCost: in.TotalCost,
 		PricePerL: in.PricePerL,
-		Odometer:  in.Odometer,
+		Kilometers: in.Kilometers,
 		FuelledAt: in.FuelledAt,
 		CreatedAt: now,
 		UpdatedAt: now,
@@ -51,7 +51,7 @@ func (s *Service) Update(ctx context.Context, in UpdateInput) (*fuelentry.FuelEn
 	existing.Liters = in.Liters
 	existing.TotalCost = in.TotalCost
 	existing.PricePerL = in.PricePerL
-	existing.Odometer = in.Odometer
+	existing.Kilometers = in.Kilometers
 	existing.FuelledAt = in.FuelledAt
 	existing.UpdatedAt = time.Now().UTC()
 	if err := existing.Validate(); err != nil {
@@ -91,7 +91,7 @@ func (s *Service) Sync(ctx context.Context, in SyncInput) ([]*fuelentry.FuelEntr
 			Liters:    se.Liters,
 			TotalCost: se.TotalCost,
 			PricePerL: se.PricePerL,
-			Odometer:  se.Odometer,
+			Kilometers: se.Kilometers,
 			FuelledAt: se.FuelledAt,
 			UpdatedAt: se.UpdatedAt,
 			DeletedAt: se.DeletedAt,

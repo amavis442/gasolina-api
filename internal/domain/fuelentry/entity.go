@@ -13,7 +13,7 @@ type FuelEntry struct {
 	Liters      float64   `json:"liters"`
 	TotalCost   float64   `json:"total_cost"`
 	PricePerL   float64   `json:"price_per_l"`
-	Odometer    float64   `json:"odometer"`
+	Kilometers  float64   `json:"kilometers"`
 	FuelledAt   time.Time `json:"fuelled_at"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
@@ -30,8 +30,8 @@ func (e *FuelEntry) Validate() error {
 	if e.TotalCost <= 0 {
 		return errors.New("total_cost must be positive")
 	}
-	if e.Odometer < 0 {
-		return errors.New("odometer must be non-negative")
+	if e.Kilometers < 0 {
+		return errors.New("kilometers must be non-negative")
 	}
 	if e.FuelledAt.IsZero() {
 		return errors.New("fuelled_at is required")

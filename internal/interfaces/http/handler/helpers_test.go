@@ -142,7 +142,7 @@ func seedEntry(repo *mockRepo, id string) *fuelentry.FuelEntry {
 		Liters:    30.0,
 		TotalCost: 50.0,
 		PricePerL: 1.66,
-		Odometer:  5000,
+		Kilometers: 5000,
 		FuelledAt: time.Now().Add(-24 * time.Hour),
 		CreatedAt: time.Now().Add(-24 * time.Hour),
 		UpdatedAt: time.Now().Add(-24 * time.Hour),

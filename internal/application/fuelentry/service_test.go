@@ -23,7 +23,7 @@ func validCreateInput() appfuelentry.CreateInput {
 		Liters:    40.5,
 		TotalCost: 65.80,
 		PricePerL: 1.625,
-		Odometer:  123456.7,
+		Kilometers:  123456.7,
 		FuelledAt: time.Now(),
 	}
 }
@@ -34,7 +34,7 @@ func seedEntry(repo *mockRepo, id string) *fuelentry.FuelEntry {
 		Liters:    30.0,
 		TotalCost: 50.0,
 		PricePerL: 1.66,
-		Odometer:  5000,
+		Kilometers:  5000,
 		FuelledAt: time.Now().Add(-24 * time.Hour),
 		CreatedAt: time.Now().Add(-24 * time.Hour),
 		UpdatedAt: time.Now().Add(-24 * time.Hour),
@@ -175,7 +175,7 @@ func TestUpdate_LastWriteWins_NewerWins(t *testing.T) {
 		Liters:    99.9,
 		TotalCost: 150.0,
 		PricePerL: 1.5,
-		Odometer:  6000,
+		Kilometers:  6000,
 		FuelledAt: time.Now(),
 		UpdatedAt: time.Now(), // newer than existing
 	}
@@ -201,7 +201,7 @@ func TestUpdate_LastWriteWins_OlderLoses(t *testing.T) {
 		Liters:    99.9,
 		TotalCost: 150.0,
 		PricePerL: 1.5,
-		Odometer:  6000,
+		Kilometers:  6000,
 		FuelledAt: time.Now(),
 		UpdatedAt: time.Now().Add(-2 * time.Hour), // older than existing
 	}
@@ -269,7 +269,7 @@ func TestSync_InsertsNewEntries(t *testing.T) {
 				Liters:    40.0,
 				TotalCost: 60.0,
 				PricePerL: 1.5,
-				Odometer:  1000,
+				Kilometers:  1000,
 				FuelledAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -300,7 +300,7 @@ func TestSync_UpdatesExistingWhenNewer(t *testing.T) {
 				Liters:    99.0,
 				TotalCost: 150.0,
 				PricePerL: 1.51,
-				Odometer:  9999,
+				Kilometers:  9999,
 				FuelledAt: time.Now(),
 				UpdatedAt: newerTime,
 			},
@@ -330,7 +330,7 @@ func TestSync_SkipsExistingWhenOlder(t *testing.T) {
 				Liters:    99.0,
 				TotalCost: 150.0,
 				PricePerL: 1.51,
-				Odometer:  9999,
+				Kilometers:  9999,
 				FuelledAt: time.Now(),
 				UpdatedAt: time.Now().Add(-2 * time.Hour), // older
 			},
@@ -360,7 +360,7 @@ func TestSync_SoftDeletesWhenNewerAndDeletedAtSet(t *testing.T) {
 				Liters:    30.0,
 				TotalCost: 50.0,
 				PricePerL: 1.66,
-				Odometer:  5000,
+				Kilometers:  5000,
 				FuelledAt: time.Now(),
 				UpdatedAt: time.Now(),
 				DeletedAt: &deletedAt,

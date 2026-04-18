@@ -7,8 +7,8 @@ Wants=network-online.target
 Type=simple
 User=gasolina
 Group=gasolina
-WorkingDirectory=/opt/gasolina-api
-ExecStart=/opt/gasolina-api/bin/gasolina-api
+WorkingDirectory=/opt/gasolina/gasolina-api
+ExecStart=/opt/gasolina/gasolina-api/bin/gasolina-api
 Restart=on-failure
 RestartSec=5s
 
@@ -19,9 +19,6 @@ SyslogIdentifier=gasolina-api
 
 # Harden the process
 NoNewPrivileges=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/opt/gasolina-api
 
 [Install]
 WantedBy=multi-user.target

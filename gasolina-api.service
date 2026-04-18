@@ -1,0 +1,27 @@
+[Unit]
+Description=Gasolina API — fuel entry sync backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gasolina
+Group=gasolina
+WorkingDirectory=/opt/gasolina-api
+ExecStart=/opt/gasolina-api/bin/gasolina-api
+Restart=on-failure
+RestartSec=5s
+
+# Redirect stdout/stderr into journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gasolina-api
+
+# Harden the process
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/gasolina-api
+
+[Install]
+WantedBy=multi-user.target

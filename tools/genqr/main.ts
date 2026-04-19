@@ -3,7 +3,7 @@
 
 import QRCode from "npm:qrcode@1.5.4";
 
-const configPath = Deno.args[0] ?? "../../config.json";
+const configPath = Deno.args[0] ?? "./config.json";
 
 let secret: string;
 try {

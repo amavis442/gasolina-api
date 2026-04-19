@@ -178,6 +178,17 @@ The suite reads `config.json` directly — no environment variables needed. Each
 
 ---
 
+### Generating a QR code for the device secret
+
+Useful for scanning the device secret into the mobile app without typing it.
+Reads `config.json` from the repo root and serves a QR code page at `http://localhost:9876`.
+
+```bash
+deno run --allow-read --allow-net tools/genqr/main.ts
+```
+
+---
+
 ## Architecture
 
 The project follows DDD + Clean Architecture. Dependencies point inward only:
